@@ -1,0 +1,82 @@
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.util.Base64;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+@WebServlet("/EmployeeServlet")
+public class EmployeeServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+
+        String name = request.getParameter("name");
+        String department = request.getParameter("department");
+        String jobTitle = request.getParameter("jobTitle");
+        String contactNumber = request.getParameter("contactNumber");
+		String role = request.getParameter("role");
+		String email=request.getParameter("email");
+		String imageBase64 = request.getParameter("imageBase64");
+		byte[] imageBytes = Base64.getDecoder().decode(imageBase64);
+		HttpSession session = request.getSession();
+		//String id=<String>session.getAttribute("id");
+        try {
+            // Load the MySQL JDBC driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+			String jdbcUrl = "jdbc:mysql://localhost:3306/ems";
+            String username = "root";
+            String password = "aman";
+            Connection connection = DriverManager.getConnection(jdbcUrl, username, password);
+
+            // SQL query to insert data into the employee table
+            String sql = "INSERT INTO employee (name, contact_number,job_title,department,email,image) VALUES (?, ?, ?, ? ,? ,?)";
+            
+            // Create a PreparedStatement object to execute the query
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            
+            // Set the values for the parameters in the query
+            preparedStatement.setString(1, name);
+			preparedStatement.setString(2, contactNumber);
+            preparedStatement.setString(3, jobTitle);
+            preparedStatement.setString(4, department);            
+            preparedStatement.setString(5, email);
+            preparedStatement.setBytes(6, imageBytes);              
+            
+            // Execute the query
+            int rowsAffected = preparedStatement.executeUpdate();
+
+            if (rowsAffected > 0) {
+				
+				session.setAttribute("role",role);
+				session.setAttribute("name",name);
+				session.setAttribute("num",contactNumber);
+				session.setAttribute("dept",department);
+				session.setAttribute("job",jobTitle);
+				
+				response.sendRedirect("userRegister.jsp");
+                out.println("Employee details added to the database successfully!");
+            } else {
+                out.println("Failed to add employee details to the database.");
+            }
+
+            // Close the resources
+            preparedStatement.close();
+            connection.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            out.println("An error occurred: " + e.getMessage());
+        }
+    }
+}

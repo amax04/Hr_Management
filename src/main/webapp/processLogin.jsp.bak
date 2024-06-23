@@ -1,0 +1,60 @@
+<!-- insertData.jsp -->
+<%@ page import="java.sql.*" %>
+<%@ page import="javax.naming.InitialContext" %>
+<%@ page import="javax.naming.NamingException" %>
+<%@ page import="javax.sql.DataSource" %>
+
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<%
+    Connection connection = null;
+    PreparedStatement preparedStatement = null;
+	
+    
+        try {
+            
+            //  using DriverManager
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/ems", "root", "1234");
+
+			 // Get the date values and comment from the request
+             int employeeId = Integer.parseInt(request.getParameter("employee_id"));
+			String user = (String) session.getAttribute("username");
+			String pass = (String) session.getAttribute("password");
+			String role = (String) session.getAttribute("role");
+            
+            // Assuming you have a table called 'yourTable' with columns 'start_date', 'end_date', and 'comment'
+             String insertQuery = "INSERT INTO users (username, password, role, employee_id) VALUES(?,?,?,?)";
+             preparedStatement = connection.prepareStatement(insertQuery);
+
+           
+            
+            // Set the parameters for the prepared statement
+            preparedStatement.setString(1, user);
+			preparedStatement.setString(2, pass);
+			preparedStatement.setString(3, role);
+            preparedStatement.setInt(4, ids);
+			
+            // Execute the query
+            preparedStatement.executeUpdate();
+
+            // Close resources
+            preparedStatement.close();
+            connection.close();
+
+            // Redirect back to the previous page
+            response.sendRedirect("employee_information.jsp");
+			out.println("<script> alert('data entered succesfully !');</script>");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Close resources in the reverse order of their creation
+            try {
+                if (preparedStatement != null) preparedStatement.close();
+                if (connection != null) connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    
+%>

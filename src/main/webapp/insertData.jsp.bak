@@ -1,0 +1,65 @@
+<!-- insertData.jsp -->
+<%@ page import="java.sql.*" %>
+<%@ page import="javax.naming.InitialContext" %>
+<%@ page import="javax.naming.NamingException" %>
+<%@ page import="javax.sql.DataSource" %>
+
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+hello
+<%
+    Connection connection = null;
+    PreparedStatement preparedStatement = null;
+	out.println("hi");
+    if (request.getMethod().equalsIgnoreCase("post")) {
+        try {
+            
+            //  using DriverManager
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/ems", "root", "1234");
+
+			 // Get the date values and comment from the request
+            String id = (String) session.getAttribute("id");
+            String startDateFromForm = request.getParameter("startDate");
+            String endDateFromForm = request.getParameter("endDate");
+            String commentFromForm = request.getParameter("comment");
+			
+			// Convert the date strings to java.sql.Date
+            java.sql.Date startDate = java.sql.Date.valueOf(startDateFromForm);
+            java.sql.Date endDate = java.sql.Date.valueOf(endDateFromForm);
+
+            // Assuming you have a table called 'yourTable' with columns 'start_date', 'end_date', and 'comment'
+             String insertQuery = "INSERT INTO leaves (employee_id, start_date, end_date, status, comments) VALUES(?,?,?,?,?)";
+             preparedStatement = connection.prepareStatement(insertQuery);
+
+           
+            
+            // Set the parameters for the prepared statement
+            preparedStatement.setString(1, id);
+			preparedStatement.setDate(2, startDate);
+            preparedStatement.setDate(3, endDate);
+			preparedStatement.setString(4, "pending");
+            preparedStatement.setString(5, commentFromForm);
+			
+            // Execute the query
+            preparedStatement.executeUpdate();
+
+            // Close resources
+            preparedStatement.close();
+            connection.close();
+
+            // Redirect back to the previous page
+            response.sendRedirect(request.getHeader("referer") + "?success=true");
+			out.println("<script> alert('data entered succesfully !');</script>");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // Close resources in the reverse order of their creation
+            try {
+                if (preparedStatement != null) preparedStatement.close();
+                if (connection != null) connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+%>

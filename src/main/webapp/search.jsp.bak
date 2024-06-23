@@ -1,0 +1,307 @@
+<%@ page import="java.sql.*" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
+<html>
+<head>
+    <title>Employee Search Results</title>
+</head>
+<style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+        }
+
+        h2 {
+            color: #333;
+            text-align: center;
+        }
+
+        table {
+             width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+		header {
+            background-color: #333;
+            padding: 15px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        nav {
+            background: linear-gradient(to right, #4CAF50, #2196F3);
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        nav a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        nav a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+		 section {
+            padding: 20px;
+        }
+
+        /* Responsive Navigation */
+        @media screen and (max-width: 600px) {
+            nav a {
+                float: none;
+                width: 100%;
+                text-align: left;
+            }
+        }
+		#search{
+			max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+		}
+		.sea{
+			width: 100%;
+            padding: 10px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+		}
+		.button{
+			padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+		}
+		.button:hover {
+            background-color: #45a049;
+        }
+		.label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+        }
+		#empsearch{
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 30px 0 0;
+			padding:20px;
+            background-color: #f4f4f4;
+			}
+			#empsearch>h2 {
+            color: #333;
+            text-align: center;
+        }
+		select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background: url('https://img.icons8.com/material-rounded/24/000000/down-arrow.png') no-repeat right 12px center/15px 15px;
+        }
+		 .edit, .delete {
+            padding: 8px 12px;
+            margin-right: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            color: #fff;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .edit {
+            background-color: #2196F3;
+        }
+
+        .delete {
+            background-color: #f44336;
+        }
+
+    </style>
+<body>
+	
+	<header>
+        <h1>Employee Information</h1>
+    </header>
+
+    <nav>
+        <a href="employee_information.jsp">Employee Information</a>
+        <a href="attendenceTracking.jsp">Attendance Tracking</a>
+        <a href="leaveManagement.jsp">Leave Management</a>
+        <a href="#notifications">Notifications/Reminders</a>
+		<a href="admin.jsp">Back-To-DashBoard</a>
+    </nav>
+
+
+<%
+    String searchCriteria = request.getParameter("searchCriteria");
+    String searchValue = request.getParameter("searchValue");
+
+    String jobTitle = request.getParameter("jobTitle");
+    String department = request.getParameter("department");
+
+    Connection connection = null;
+    Statement statement = null;
+    ResultSet resultSet = null;
+
+    try {
+        // Load the JDBC driver
+        Class.forName("com.mysql.cj.jdbc.Driver");
+
+        // Connect to the database
+        String url = "jdbc:mysql://localhost:3306/ems";
+        String username = "root";
+        String password = "1234";
+        connection = DriverManager.getConnection(url, username, password);
+
+        // Create a SQL statement
+        statement = connection.createStatement();
+
+        // Build the SQL query based on the search criteria
+        String sqlQuery = "SELECT * FROM employee WHERE ";
+        if ("name".equals(searchCriteria)) {
+            sqlQuery += "name LIKE '%" + searchValue + "%'";
+        } else if ("employee_id".equals(searchCriteria)) {
+            sqlQuery += "employee_id = '" + searchValue + "'";
+        } else if ("contact_number".equals(searchCriteria)) {
+            sqlQuery += "contact_number = '" + searchValue + "'";
+        } else if ("job_title".equals(searchCriteria)) {
+            sqlQuery += "job_title = '" + jobTitle + "'";
+        } else if ("department".equals(searchCriteria)) {
+            sqlQuery += "department = '" + department + "'";
+        }
+
+        // Execute the SQL query
+        resultSet = statement.executeQuery(sqlQuery);
+
+        // Display the search results
+        out.println("<h2>Search Results:</h2>");
+        out.println("<table>");
+        out.println("<tr><th>Name</th><th>Employee ID</th><th>Contact Number</th><th>Job Title</th><th>Department</th><th>Action</th></tr>");
+
+         while (resultSet.next()) {
+            String employeeId = resultSet.getString("employee_id");
+
+            out.println("<tr>");
+            out.println("<td>" + resultSet.getString("name") + "</td>");
+            out.println("<td>" + employeeId + "</td>");
+            out.println("<td>" + resultSet.getString("contact_number") + "</td>");
+            out.println("<td>" + resultSet.getString("job_title") + "</td>");
+            out.println("<td>" + resultSet.getString("department") + "</td>");
+            out.println("<td>");
+            out.println("<a class='edit' href='edit.jsp?employeeId=" + employeeId + "'>Edit</a>");
+            out.println("<a class='delete' href='delete.jsp?employeeId=" + employeeId + "'>Delete</a>");
+            out.println("</td>");
+            out.println("</tr>");
+        }
+
+        out.println("</table>");
+
+    } catch (ClassNotFoundException | SQLException e) {
+        e.printStackTrace();
+    } finally {
+        // Close the database resources
+        try {
+            if (resultSet != null) resultSet.close();
+            if (statement != null) statement.close();
+            if (connection != null) connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+%>
+
+<div id="empsearch">
+        <h2>Employee Search</h2>
+
+		<form id="search" action="search.jsp" method="GET">
+        <label class="label" for="searchCriteria">Select Search Criteria:</label>
+        <select id="searchCriteria" class="sea" name="searchCriteria" required>
+            <option value="" disabled selected>Select...</option>
+            <option value="name">Name</option>
+            <option value="employee_id">Employee ID</option>
+            <option value="contact_number">Contact Number</option>
+            <option value="job_title">Job Title</option>
+            <option value="department">Department</option>
+        </select>
+
+        <label class="label" for="searchValue">Enter Search Value:</label>
+        <input type="text" class="sea" id="searchValue" name="searchValue" placeholder="Enter search value" required>
+
+        <div id="jobTitleGroup" style="display: none;">
+            <label class="label" for="jobTitle">Select Job Title:</label>
+            <select class="sea" id="jobTitle" name="jobTitle">
+                <option value="" disabled selected>Select job title</option>
+                <option value="softwareEngineer">Software Engineer</option>
+                <option value="marketingSpecialist">Marketing Specialist</option>
+                <option value="salesRepresentative">Sales Representative</option>
+            </select>
+        </div>
+
+        <div id="departmentGroup" style="display: none;">
+            <label for="department">Select Department:</label>
+            <select class="sea" id="department" name="department">
+                <option value="" disabled selected>Select department</option>
+                <option value="IT">IT</option>
+                <option value="Marketing">Marketing</option>
+                <option value="Sales">Sales</option>
+            </select>
+        </div>
+
+        <button class="button" type="submit">Search</button>
+    </form>
+
+    <script>
+        document.getElementById('searchCriteria').addEventListener('change', function () {
+            var jobTitleGroup = document.getElementById('jobTitleGroup');
+            var departmentGroup = document.getElementById('departmentGroup');
+            var searchValueInput = document.getElementById('searchValue');
+
+            jobTitleGroup.style.display = 'none';
+            departmentGroup.style.display = 'none';
+            searchValueInput.style.display = 'block';
+
+            var selectedValue = this.value;
+
+            if (selectedValue === 'jobTitle') {
+                jobTitleGroup.style.display = 'block';
+                searchValueInput.style.display = 'none';
+            } else if (selectedValue === 'department') {
+                departmentGroup.style.display = 'block';
+                searchValueInput.style.display = 'none';
+            }
+        });
+    </script>
+	</div>
+
+</body>
+</html>

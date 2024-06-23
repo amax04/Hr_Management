@@ -1,0 +1,133 @@
+<%@ page import="java.sql.*" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
+<html>
+<head>
+    <title>Delete Employee</title>
+</head>
+ <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+        }
+
+        h2 {
+            color: #333;
+            text-align: center;
+        }
+
+        p {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        a {
+            display: inline-block;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        a:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<%
+    // ... (Same as before)
+%>
+
+</body>
+</html>
+delete.jsp - Improved styling:
+jsp
+Copy code
+<%@ page import="java.sql.*" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
+<html>
+<head>
+    <title>Delete Employee</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+        }
+
+        h2 {
+            color: #333;
+            text-align: center;
+        }
+
+        p {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        a {
+            display: inline-block;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        a:hover {
+            background-color: #45a049;
+        }
+    </style>
+<body>
+
+<%
+    String employeeId = request.getParameter("employeeId");
+
+    Connection connection = null;
+    PreparedStatement preparedStatement = null;
+
+    try {
+        // Load the JDBC driver
+        Class.forName("com.mysql.cj.jdbc.Driver");
+
+        // Connect to the database
+        String url = "jdbc:mysql://localhost:3306/ems";
+        String username = "root";
+        String password = "1234";
+        connection = DriverManager.getConnection(url, username, password);
+
+        // Create a SQL statement
+        String sqlQuery = "DELETE FROM employee WHERE employee_id=?";
+        preparedStatement = connection.prepareStatement(sqlQuery);
+        preparedStatement.setString(1, employeeId);
+
+        // Execute the delete operation
+        int rowsAffected = preparedStatement.executeUpdate();
+
+        if (rowsAffected > 0) {
+            // Successful delete
+%>
+            <h2>Employee Deleted Successfully</h2>
+            <p><a href="employee_information.jsp">Back to Search</a></p>
+<%
+        } else {
+            // Delete failed
+            out.println("<h2>Delete failed</h2>");
+        }
+
+    } catch (ClassNotFoundException | SQLException e) {
+        e.printStackTrace();
+    } finally {
+        // Close the database resources
+        try {
+            if (preparedStatement != null) preparedStatement.close();
+            if (connection != null) connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+%>
+
+</body>
+</html>

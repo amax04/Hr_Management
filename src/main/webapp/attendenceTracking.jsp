@@ -1,0 +1,155 @@
+<%@ page import="java.sql.*" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+<%@ page import="java.io.*,java.util.*"%>
+<%@ page import="javax.servlet.*"%>
+<%@ page import="javax.servlet.http.*"%>
+
+<%
+    // Check if the user is logged in
+    String role = (String) session.getAttribute("role");
+    if (role == null || role.isEmpty()) {
+        // If not logged in, redirect to the login page
+        response.sendRedirect("login.html");
+    }
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel-like Page</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            margin: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background-color: #333;
+            padding: 15px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        nav {
+            background: linear-gradient(to right, #4CAF50, #2196F3);
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        nav a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        nav a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        section {
+            padding: 20px;
+        }
+
+        /* Responsive Navigation */
+        @media screen and (max-width: 600px) {
+            nav a {
+                float: none;
+                width: 100%;
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    
+    <header>
+        <h1>Employees Attendance</h1>
+    </header>
+
+    <nav>
+        <a href="employee_information.jsp">Employee Information</a>
+        <a href="#attendanceTracking">Attendance Tracking</a>
+        <a href="leaveManagement.jsp">Leave Management</a>
+        <a href="email_form.jsp">Notifications/Reminders</a>
+		<a href="admin.jsp">Back-To-DashBoard</a>
+		<a href="logout.jsp">LogOut</a>
+    </nav>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Employee ID</th>
+                <th>Date</th>
+                <th>Status</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            <%
+    Connection connection = null;
+    Statement statement = null;
+    ResultSet resultSet = null;
+
+    try {
+       // using DriverManager
+         Class.forName("com.mysql.cj.jdbc.Driver");
+         connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/ems", "root", "aman");
+
+        statement = connection.createStatement();
+        resultSet = statement.executeQuery("SELECT * FROM attendance");
+
+        while (resultSet.next()) {
+            out.println("<tr> ");
+			out.println("<td>"+resultSet.getString("employee_id")+"</td>");
+            out.println("<td>"+resultSet.getString("attendance_date")+"</td>");
+			out.println("<td>"+resultSet.getString("status")+"</td>");
+			out.println("</tr>");
+					
+            // Add more columns as needed
+        }
+    } catch (SQLException  e) {
+        e.printStackTrace();
+    } finally {
+        // Close resources in the reverse order of their creation
+        try {
+            if (resultSet != null) resultSet.close();
+            if (statement != null) statement.close();
+            if (connection != null) connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+%>
+            <!-- Add more rows as needed -->
+        </tbody>
+    </table>
+
+</body>
+</html>

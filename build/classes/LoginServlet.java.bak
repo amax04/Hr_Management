@@ -1,0 +1,75 @@
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+public class LoginServlet extends HttpServlet 
+{
+	public void doGet(HttpServletRequest req,HttpServletResponse res) throws IOException,ServletException
+	{
+		
+		res.setContentType("text/html");
+		PrintWriter pw=res.getWriter();
+		
+		String user=req.getParameter("username");
+		String pass=req.getParameter("passward");
+		
+        try {
+            // Load the JDBC driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            // Establish a connection
+            String jdbcUrl = "jdbc:mysql://localhost:3306/ems";
+            String username = "root";
+            String password = "1234";
+            Connection connection = DriverManager.getConnection(jdbcUrl, username, password);
+
+            // Execute a query
+            String query = "SELECT employee_id,role FROM users where username =? and password=?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setString(1,user);
+			preparedStatement.setString(2,pass);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            // Process the results
+            if(resultSet.next()) {
+				String role = resultSet.getString("role");
+				String columnName = resultSet.getString("employee_id");
+				if(role.equals("admin"))
+				{
+						res.sendRedirect("admin.html");
+				}
+				else{
+						// Retrieve data and do something with it
+
+					   // pw.println("Employee_id : " + columnName + "<br>");
+						//req.setAttribute(id,columnName);
+						HttpSession session = req.getSession();
+						session.setAttribute("id",columnName);
+						res.sendRedirect("employee_dashboard.jsp");
+					}
+				}
+			else{
+				PrintWriter out = res.getWriter();
+                out.println("Invalid username or password");
+				}
+
+            // Close resources
+            resultSet.close();
+            preparedStatement.close();
+            connection.close();
+        } catch (ClassNotFoundException | SQLException e) {
+            pw.println("Error: " + e.getMessage());
+        }
+	//	}
+		
+	}
+}

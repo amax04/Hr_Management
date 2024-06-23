@@ -1,0 +1,42 @@
+<web-app>
+	<servlet>
+		<servlet-name>login</servlet-name>
+		<servlet-class>LoginServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>login</servlet-name>
+		<url-pattern>/LoginServlet</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>LogoutServlet</servlet-name>
+		<servlet-class>LogoutServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+			<servlet-name>LogoutServlet</servlet-name>
+			<url-pattern>/LogoutServlet</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>EmployeeServlet</servlet-name>
+		<servlet-class>EmployeeServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+			<servlet-name>EmployeeServlet</servlet-name>
+			<url-pattern>/EmployeeServlet</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>UpdateLeaveStatusServlet</servlet-name>
+		<servlet-class>UpdateLeaveStatusServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+			<servlet-name>UpdateLeaveStatusServlet</servlet-name>
+			<url-pattern>/UpdateLeaveStatusServlet</url-pattern>
+	</servlet-mapping>
+	
+
+	<welcome-file-list>
+		<welcome-file>login.html</welcome-file>
+	</welcome-file-list>
+</web-app>

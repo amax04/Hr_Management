@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            background-color: black;
+            color: aliceblue;
+        }
+        #header{
+            font-size: 66px;
+            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 1px solid gray;
+        }
+        #cont{
+            border: 1px solid;
+            height: 350px;
+            width: 30%;
+            margin: 5% 35%;
+            padding: 20px 0px 0px 25px;
+
+        }
+        .login{
+            font-size: 44px;
+            text-align: center;
+            color: rgb(251, 70, 50);
+        }
+        .login-cont{
+            margin-top: 10%;
+            font-size: 22px;
+        }
+        #box:focus{
+            background-color: rgb(0, 255, 255);
+        }
+        #box{
+            width: 65%;
+            height: 4%;
+            font-size: 100%;
+        }
+        #submit:hover{
+            box-shadow: -1px 1px 25px wheat;
+        }
+        #submit:active{
+            background-color: gray;
+        }
+        #submit{
+            font-size: 28px;
+            color: aliceblue;
+            background-color: red;
+            border-radius: 20px;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="header">Employee <font color="red"> Management </font>System</div>    
+
+    <div id="cont">  
+        <div class="login">Login</div>
+        <div class="login-cont">
+            <form action="LoginServlet" method="get">
+                <label for="username">Username</label>
+                <input type="text" name="username" id="box" required/> <br><br><br>
+                <label for="passward">Passward</label>
+                <input type="password" id="box" name="passward" required><br><br><br><br>
+                <center><input id="submit" type="submit"></center>
+           </form>
+        </div>
+    </div>
+    
+</body>
+</html>

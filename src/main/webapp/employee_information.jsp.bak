@@ -1,0 +1,319 @@
+<%@ page import="java.sql.*" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #nav>div:nth-child(2){
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 150px 10px 155px;
+            
+        }
+        #nav>div:nth-child(2)>div{
+            border-radius: 15px 0px;
+            padding: 5px 10px;
+            background-color: rgb(206, 232, 254);
+        }
+        #nav>div:nth-child(2)>div:hover{
+            background-color: rgb(179, 214, 245);
+        }
+        #nav>div{
+            text-align: center;
+        }
+        #nav{
+            background-color: aliceblue;
+            margin: -10px 0 30px;
+            padding: 0 0 30px;
+        }
+        #Cont-box{
+            background-color: rgb(143, 255, 218);
+            margin: -30px 0;
+            padding: 50px 0px;
+        }
+        .cont{
+            display: flex;
+            justify-content: space-between;
+            padding: 2px  50px;
+            
+        }
+        .cont>div{
+            border: 1px solid;
+            width: 265px;
+            padding: 10px;
+            text-align: center;
+        }
+        .cont>div:nth-child(2n){
+            background-color: rgb(50, 244, 185);  
+        }
+        .cont>div:nth-child(2n+1){
+            background-color: rgb(108, 216, 184);  
+        }
+		#add{
+            padding: 20px;
+            background-color: aliceblue;
+        }
+        #add>div:nth-child(1){
+            text-align: center;
+        }
+        .add-in>form>div{
+            margin: 10px 550px;
+            display: flex;
+            font-size: 18px;
+            justify-content: space-between;
+        }
+        .add-in>form>div:nth-child(6){
+            padding: 20px 150px 0;
+        }
+		#Role{
+            padding:  0 0 0 90px;
+            display: block;
+        }
+		#search{
+			max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+		}
+		.sea{
+			width: 100%;
+            padding: 10px;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+		}
+		.button{
+			padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+		}
+		.button:hover {
+            background-color: #45a049;
+        }
+		.label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+        }
+		#empsearch{
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 30px 0 0;
+			padding:20px;
+            background-color: #f4f4f4;
+			}
+			#empsearch>h2 {
+            color: #333;
+            text-align: center;
+        }
+		select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background: url('https://img.icons8.com/material-rounded/24/000000/down-arrow.png') no-repeat right 12px center/15px 15px;
+        }
+		.edit, .delete {
+            padding: 8px 12px;
+            margin-right: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            color: #fff;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .edit {
+            background-color: #2196F3;
+        }
+
+        .delete {
+            background-color: #f44336;
+        }
+		.edit:hover, .delete:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div id="nav">
+        <div> <H1>Employee_Information</H1></div>
+        <div>
+            <div>Employee_Information</div>
+            <div onclick="location='attendenceTracking.jsp'">Attendence_Tracking</div>
+            <div onclick="location='leaveManagement.jsp'">Leave_Management</div>
+            <div >Notification_&_Reminders</div>
+            <div onclick="location='admin.jsp'">Back-To-HomePage</div>
+        </div>
+    </div>
+    <div id="Cont-box">
+        <div class="cont">
+            <div>Employee_ID</div>
+            <div>Name</div>
+            <div>Contact_Number</div>
+            <div>Job_Title</div>
+            <div>Department</div>
+			<div>Action</div>
+			<div>Reset</div>
+        </div>
+        <%
+		Connection connection = null;
+		Statement statement = null;
+		ResultSet resultSet = null;
+
+		try {
+		   // using DriverManager
+			 Class.forName("com.mysql.cj.jdbc.Driver");
+			 connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/ems", "root", "1234");
+
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery("SELECT * FROM employee");
+			
+			//session.setAttribute("id",employeeId);
+			while (resultSet.next()) {
+			String employeeId=resultSet.getString("employee_id");
+				
+				out.println(" <div class='cont'>"+
+							"<div>" +  resultSet.getString("employee_id")+"</div>");
+				out.println(" <div>" + resultSet.getString("name")+"</div>");
+				out.println(" <div>" + resultSet.getString("contact_number")+"</div>");
+				out.println(" <div>" + resultSet.getString("job_title")+"</div>");
+				out.println(" <div>" + resultSet.getString("department")+"</div>");
+				out.println("<div>");
+				out.println("<a class='edit' href='edit.jsp?employeeId=" + employeeId + "'>Edit</a>");
+				out.println("<a class='delete' href='delete.jsp?employeeId=" + employeeId + "'>Delete</a>");
+				out.println("</div>");
+				out.println("<div>");
+				out.println("<a class='edit' href='userUpdate.jsp?employeeId=" + employeeId + "'>UserUpdate</a>");
+				out.println("</div>");
+				out.println("</div>");
+
+
+            // Add more columns as needed
+			}
+		} catch (SQLException  e) {
+			e.printStackTrace();
+		} finally {
+			// Close resources in the reverse order of their creation
+			try {
+				if (resultSet != null) resultSet.close();
+				if (statement != null) statement.close();
+				if (connection != null) connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+	    }
+	%>
+        
+    </div>
+
+	<div id="empsearch">
+        <h2>Employee Search</h2>
+
+		<form id="search" action="search.jsp" method="GET">
+        <label class="label" for="searchCriteria">Select Search Criteria:</label>
+        <select id="searchCriteria" class="sea" name="searchCriteria" required>
+            <option value="" disabled selected>Select...</option>
+            <option value="name">Name</option>
+            <option value="employee_id">Employee ID</option>
+            <option value="contact_number">Contact Number</option>
+            <option value="job_title">Job Title</option>
+            <option value="department">Department</option>
+        </select>
+
+        <label class="label" for="searchValue">Enter Search Value:</label>
+        <input type="text" class="sea" id="searchValue" name="searchValue" placeholder="Enter search value" required>
+
+        <div id="jobTitleGroup" style="display: none;">
+            <label class="label" for="jobTitle">Select Job Title:</label>
+            <select class="sea" id="jobTitle" name="jobTitle">
+                <option value="" disabled selected>Select job title</option>
+                <option value="Software Engineer">Software Engineer</option>
+                <option value="Marketing Specialist">Marketing Specialist</option>
+                <option value="Sales Representative">Sales Representative</option>
+            </select>
+        </div>
+
+        <div id="departmentGroup" style="display: none;">
+            <label for="department">Select Department:</label>
+            <select class="sea" id="department" name="department">
+                <option value="" disabled selected>Select department</option>
+                <option value="IT">IT</option>
+                <option value="Marketing">Marketing</option>
+                <option value="Sales">Sales</option>
+            </select>
+        </div>
+
+        <button class="button" type="submit">Search</button>
+    </form>
+
+    <script>
+        document.getElementById('searchCriteria').addEventListener('change', function () {
+            var jobTitleGroup = document.getElementById('jobTitleGroup');
+            var departmentGroup = document.getElementById('departmentGroup');
+            var searchValueInput = document.getElementById('searchValue');
+
+            jobTitleGroup.style.display = 'none';
+            departmentGroup.style.display = 'none';
+            searchValueInput.style.display = 'block';
+
+            var selectedValue = this.value;
+
+            if (selectedValue === 'job_title') {
+                jobTitleGroup.style.display = 'block';
+                searchValueInput.style.display = 'none';
+            } else if (selectedValue === 'department') {
+                departmentGroup.style.display = 'block';
+                searchValueInput.style.display = 'none';
+            }
+        });
+    </script>
+	</div>
+
+	
+	
+	<div id="add">
+        <div><H1>Add New Employee</H1></div>
+        <div class="add-in">
+            <form action="EmployeeServlet" method="post">
+                <div>
+                    <label for="Name">Name:</label>
+                    <input type="text" name="name" required>
+                </div>
+                <div>
+                    <label for="Contact_Number">Contact_Number:</label>
+                    <input  type="text" name="contactNumber" required>
+                </div>
+                <div>  
+                    <label for="Job_Title">Job_Title:</label>
+                    <input  type="text" name="jobTitle" required>
+                </div>
+                <div>    
+                    <label for="Department">Department:</label>
+                    <input  type="text" name="department" required>
+                </div>
+				<div id="Role">
+                        <p>select Role of the employee</p>
+                        
+                        <input type="radio" name="role" value="admin">
+                        <label for="admin">admin</label>
+                        <input type="radio" name="role" value="employee" required>
+                        <label for="admin">employee</label>
+                    </div>
+                <div>
+                    <input type="submit" value="Add">
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<%@ page import="java.sql.*" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
+<html>
+<head>
+    <title>Update Employee</title>
+</head>
+<body>
+
+<%
+    String employeeId = request.getParameter("employeeId");
+    String name = request.getParameter("name");
+    String contactNumber = request.getParameter("contactNumber");
+    String jobTitle = request.getParameter("jobTitle");
+    String department = request.getParameter("department");
+
+    Connection connection = null;
+    PreparedStatement preparedStatement = null;
+
+    try {
+        // Load the JDBC driver
+        Class.forName("com.mysql.cj.jdbc.Driver");
+
+        // Connect to the database
+        String url = "jdbc:mysql://localhost:3306/ems";
+        String username = "root";
+        String password = "1234";
+        connection = DriverManager.getConnection(url, username, password);
+
+        // Create a SQL statement
+        String sqlQuery = "UPDATE employee SET name=?, contact_number=?, job_title=?, department=? WHERE employee_id=?";
+        preparedStatement = connection.prepareStatement(sqlQuery);
+        preparedStatement.setString(1, name);
+        preparedStatement.setString(2, contactNumber);
+        preparedStatement.setString(3, jobTitle);
+        preparedStatement.setString(4, department);
+        preparedStatement.setString(5, employeeId);
+
+        // Execute the update operation
+        int rowsAffected = preparedStatement.executeUpdate();
+
+        if (rowsAffected > 0) {
+            // Successful update
+%>
+            <h2>Employee Updated Successfully</h2>
+            <p><a href="employee_information.jsp">Back to Search</a></p>
+<%
+        } else {
+            // Update failed
+            out.println("<h2>Update failed</h2>");
+        }
+
+    } catch (ClassNotFoundException | SQLException e) {
+        e.printStackTrace();
+    } finally {
+        // Close the database resources
+        try {
+            if (preparedStatement != null) preparedStatement.close();
+            if (connection != null) connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+%>
+
+</body>
+</html>
