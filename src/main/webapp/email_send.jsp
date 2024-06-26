@@ -24,8 +24,8 @@ String host = "smtp.gmail.com";
 int port = 587;
 
 // Set the username and password for authentication
-String username = "saxenakirito06660@gmail.com";
-String password = "ssgo smxy nbid mboz";
+String username = "youremail";
+String password = "**** **** ****";
 
 
 // Get system properties
