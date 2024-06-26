@@ -37,7 +37,7 @@ public class EmployeeServlet extends HttpServlet {
 
 			String jdbcUrl = "jdbc:mysql://localhost:3306/ems";
             String username = "root";
-            String password = "aman";
+            String password = "****";
             Connection connection = DriverManager.getConnection(jdbcUrl, username, password);
 
             // SQL query to insert data into the employee table
